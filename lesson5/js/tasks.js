@@ -1,4 +1,3 @@
-
 var TASKS_NAME = 'tasks';
 var STATE = {
     [TASKS_NAME]: [],
@@ -24,10 +23,10 @@ function initTaskContainer() {
     var keysCount = data.length || 0; // Object.keys(data).length || 0;
     clearFormList();
 
-    if(!keysCount) {
+    if (!keysCount) {
         coreInsertLiToList({task: "На сегодня нет активных задач"});
     } else {
-        for(var i = 0; i < keysCount; i++) {
+        for (var i = 0; i < keysCount; i++) {
             coreInsertLiToList(data[i], i, true);
         }
     }
@@ -37,13 +36,13 @@ function insertItemToList() {
     var task = document.getElementById('taskData').value;
     var errCounter = 0;
     task = task.trim();
-    if( !task.length ) {
+    if (!task.length) {
         printErrorHelper('taskData', "Это поле обязательно для ввода - введите название задачи", true);
         errCounter++;
     }
     var reminder = document.getElementById('reminderData').value;
     reminder = reminder.trim();
-    if( !reminder.length ) {
+    if (!reminder.length) {
         printErrorHelper('reminderData', "Дата задачи обязательна для ввода", true);
         errCounter++;
     }
@@ -51,8 +50,8 @@ function insertItemToList() {
     if (errCounter) {
         return false;
     }
-    console.log({ task, reminder, check });
-    STATE[TASKS_NAME].push({ task, reminder, check });
+    console.log({task, reminder, check});
+    STATE[TASKS_NAME].push({task, reminder, check});
     emptyAllList();
     return true;
 }
@@ -64,7 +63,7 @@ function updateFormAndState() {
 }
 
 function printErrorHelper(id, msg, err = false) {
-    var errorHelper = document.getElementById( id + 'Help');
+    var errorHelper = document.getElementById(id + 'Help');
     errorHelper.innerHTML = msg;
     if (err) {
         errorHelper.classList.add('text-danger');
@@ -99,7 +98,7 @@ function clearForm() {
 
 }
 
-function emptyAllList(){
+function emptyAllList() {
     document.getElementById('task_list').innerHTML = '';
     updateFormAndState();
 }
@@ -128,13 +127,10 @@ function clearFormList() {
 }
 
 
-
-
-
 /////////////////////////////////////// CALENDAR ////////////////////
 function showCalendar(event) {
     event.stopPropagation();
-    if( STATE.showCalendar) {
+    if (STATE.showCalendar) {
         return false;
     }
 
@@ -151,13 +147,12 @@ function showCalendar(event) {
 function hideCalendar(event) {
     event.stopPropagation();
     console.log('IN hideCalendar ', STATE.showCalendar);
-    if( !STATE.showCalendar) {
+    if (!STATE.showCalendar) {
         return false;
     }
     calendar.style.display = "none";
     STATE.showCalendar = false;
     return true;
-
 }
 
 function buildCalendar() {
@@ -167,29 +162,35 @@ function buildCalendar() {
     var dayMonth = today.getDate();
     var dayWeek = today.getDay(); // от 0 до 6, причем 0 - это воскресение
     dayWeek = dayWeek === 0 ? 7 : dayWeek;
-    var firstDay = getFirstDayOfMonth(year, month);
+    var firstDay = getFirstDayWeekOfMonth(year, month);
+
     console.log("DATE = ", firstDay, dayWeek, dayMonth, month, year, today);
-    var k = dayMonth - (dayWeek - 1); // текущий день месяца, который вставляется в ячейку таблицы
-    /* if (dayWeek === 7) { // если это воскресение
-      k = dayMonth - (dayWeek + 1);
-    }*/
+    var k = dayMonth - (dayWeek - 1); // первый день недели, который вставляется в ячейку таблицы
+    alert('dayMonth k ' + k);
+
     var j = 1; // это счетчик недель, которые выводятся в календарь
+    let previusMonthDayCounter = getLastMondayOfMonth(getFirstDayWeekOfMonth(year, month - 1));
+    let nextMonthDayCounter = 1;
     var dayCounter = 1;
     var str_out_week = '';
-    while(j < 6) {
+    while (j < 6) {
         var str_out = '';
-        for(var i = 1; i < 8; i++, k++) {
-            if ((firstDay.dayWeek > i && j == 1) || dayCounter > firstDay.maxDays ) {
-                str_out += '<td>&nbsp;</td>';
-            } else {
-                var todayClass = '';
-                if ( k == dayMonth ) { //
+        for (var i = 1; i < 8; i++, k++) {
+            var todayClass = '';
+            if (firstDay.dayWeek > i && j == 1) {
+                str_out += '<td' + todayClass + ' data-weekday="' + i + '" data-daymonth="' + previusMonthDayCounter + '">' + previusMonthDayCounter + '</td>';
+                previusMonthDayCounter++;
+            } else if (dayCounter > firstDay.maxDays) {
+                str_out += '<td' + todayClass + ' data-weekday="' + i + '" data-daymonth="' + nextMonthDayCounter + '">' + nextMonthDayCounter + '</td>';
+                nextMonthDayCounter++;
+            }
+            else {
+                if (k == dayMonth) { //
                     todayClass = ' class="today"';
                 }
-                str_out += '<td' + todayClass + ' data-weekday="'+ i +'" data-daymonth="' + dayCounter + '">' + dayCounter + '</td>';
+                str_out += '<td' + todayClass + ' data-weekday="' + i + '" data-daymonth="' + dayCounter + '">' + dayCounter + '</td>';
                 dayCounter++;
             }
-
         }
         str_out_week += '<tr>' + str_out + '</tr>';
         j++;
@@ -198,13 +199,22 @@ function buildCalendar() {
     return str_out_week;
 }
 
-function getFirstDayOfMonth(yy, mm) {
-    var firstDayOfCurrentMonth = new Date(yy, mm, 1); // дата на момент первого числа текущего месяца
-    var month = firstDayOfCurrentMonth.getMonth(); // месяц от 0 до 11, нужно прибавлять 1
-    var dayMonth = firstDayOfCurrentMonth.getDate();
-    var dayWeek = firstDayOfCurrentMonth.getDay(); // от 0 до 6, причем 0 - это воскресение
-    dayWeek = dayWeek === 0 ? 7 : dayWeek;
-    var lastDayOfMonth = new Date(yy, mm +1, 0).getDate();
+const getLastMondayOfMonth = (month) => {
+    const deltaBeforeFirstMonday = 8 - month.dayWeek;
+    let dayMonthCount = 1 + deltaBeforeFirstMonday;
+
+    do {
+        dayMonthCount = dayMonthCount + 7
+    } while (dayMonthCount + 7 <= month.maxDays);
+
+    return dayMonthCount
+
+};
+
+
+function getFirstDayWeekOfMonth(yy, mm) {
+    const firstDayOfCurrentMonth = new Date(yy, mm, 1); // дата на момент первого числа текущего месяца
+    const dayWeek = firstDayOfCurrentMonth.getDay() === 0 ? 7 : firstDayOfCurrentMonth.getDay(); // от 0 до 6, причем 0 - это воскресение
     return {
         dayWeek,
         maxDays: getLastDay(yy, mm)
@@ -212,5 +222,5 @@ function getFirstDayOfMonth(yy, mm) {
 }
 
 function getLastDay(yy, mm) {
-    return  new Date(yy, mm +1, 0).getDate();
+    return new Date(yy, mm + 1, 0).getDate();
 }
