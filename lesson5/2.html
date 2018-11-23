@@ -1,0 +1,160 @@
+<html>
+
+<head>
+	<title>My Test PROJECT</title>
+	<meta charset="UTF-8" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+<style>
+.delete_ico {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+
+}
+.delete_ico:hover {
+  color: 990000;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+<br /><br />
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h3>Test Project</h3>
+		</div>
+	</div><!-- end of row -->
+	<div class="row">
+		<div class="col-md-12"><br />
+        <p id="text1"><strong>Test data:</strong> </p>
+		</div><!-- end of col-md-6 -->
+	</div> <!-- end of row -->
+</div>
+<script>
+
+function echo() {
+  var str = '';
+  for(var i=0; i < arguments.length; i++) {
+    str += ' ' + String(arguments[i]);
+  }
+  console.log.apply(this, arguments); // echo('переменная А = ', a) => console.log('переменная А = ', a)
+  // console.log(arguments);// echo('переменная А = ', a) => console.log(arguments) => одну переменную - массив arguments
+  document.getElementById('text1').innerHTML += '<br />' + str;
+}
+////////////////////////////////////////////
+
+var Alex = { name: 'Hi there, this is Alex (field name)' };
+var Clara = Object.create(Alex);
+
+echo('Alex.__proto__ = ', Alex.__proto__);
+echo('Alex.__proto__ === Object.prototype = ', Alex.__proto__ === Object.prototype); // true
+
+echo('Object.prototype.__proto__ = ', Object.prototype.__proto__); // true
+echo('\n')
+
+Alex.__proto__.testValue = "Дополнительное поле у Alex";
+echo('Alex = ', Alex);
+echo('Alex.testValue = ', Alex.testValue);
+
+Clara.__proto__.testValue = "Дополнительное поле добавленное через Clara";
+echo('Clara = ', Clara);
+echo('Alex = ', Alex);
+echo('Clara.testValue = ', Clara.testValue);
+echo('\n')
+
+function myFunction(name) {
+  this.name = name;
+}
+
+echo('myFunction = ', myFunction);
+echo('myFunction.name = ', myFunction.name);
+echo('myFunction.__proto__ = ', myFunction.__proto__);
+echo('myFunction.prototype ', myFunction.prototype);
+echo('typeof myFunction.prototype ', typeof myFunction.prototype);
+echo('myFunction.prototype === Object.prototype = ', myFunction.prototype === Object.prototype);
+echo('myFunction.prototype.__proto__ === Object.prototype ', myFunction.prototype.__proto__ === Object.prototype);
+echo('\n');
+
+// hasOwnProperty()
+echo('hasOwnProperty: ');
+echo('Alex.hasOwnProperty("name") ', Alex.hasOwnProperty("name"));
+echo('Alex.hasOwnProperty("testValue") ', Alex.hasOwnProperty("testValue"));
+echo('Alex.__proto__.hasOwnProperty("testValue") ', Alex.__proto__.hasOwnProperty("testValue"));
+
+echo('Clara.hasOwnProperty("name") ', Clara.hasOwnProperty("name"));
+echo('Clara.hasOwnProperty("testValue") ', Clara.hasOwnProperty("testValue"));
+echo('Clara.__proto__.hasOwnProperty("testValue") ', Clara.__proto__.hasOwnProperty("testValue"));
+echo('\n');
+
+echo('Интересный нюанс: ');
+echo('typeof Object.prototype = ', typeof Object.prototype);
+echo('myFunction.testValue = ', myFunction.testValue);
+echo('Array.testValue = ', Array.testValue);
+echo('Object.testValue = ', Object.testValue);
+echo('Function.testValue = ', Function.testValue);
+echo('String.testValue = ', String.testValue);
+echo('\n');
+
+echo('JOE & DEEP:');
+
+function testTimeExample() {
+  var print = function () {
+    console.log("Вызов из this.print");
+  }
+}
+/*
+var thisPrintObjects = [];
+console.time('a');
+for(var i=0; i < 1000000; i++) {
+  thisPrintObjects.push( new testTimeExample());
+}
+console.timeEnd('a');
+*/
+function testTimeExamplePROTOTYPE() {/* ... */ }
+testTimeExamplePROTOTYPE.prototype.print = function () {
+  console.log("Вызов из PROTOTYPE.print");
+}
+/*
+var thisPrintObjectsPROTO = [];
+console.time('b');
+for(var i=0; i < 1000000; i++) {
+  thisPrintObjectsPROTO.push( new testTimeExamplePROTOTYPE());
+}
+console.timeEnd('b');
+*/
+
+function Person(name) {
+  this.name = name;
+}
+
+let deep = new Person('DEEP');
+let creature = { alive: true };
+
+echo('deep = ', deep);
+echo('creature = ', creature);
+Person.prototype = creature;
+
+echo('deep after = ', deep);
+echo('creature after = ', creature);
+
+let joe = new Person("JOE");
+echo('joe = ', joe);
+
+
+echo('joe.alive = ', joe.alive);
+echo('deep.alive = ', deep.alive);
+
+const vv = () => {
+	return 1;
+}
+echo('typeof vv = ', typeof vv, vv);
+
+//var instanceOfMyFunction =
+</script>
+
+</body>
+
+</html>
