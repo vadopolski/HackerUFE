@@ -4,6 +4,7 @@ var STATE = {
     formName: 'form1',
     calendar: 'calendar',
     showCalendar: false,
+    calendarMonth: new Date()
 };
 
 function updateLocalStorage(varName, objData) {
@@ -155,49 +156,65 @@ function hideCalendar(event) {
     return true;
 }
 
-function buildCalendar() {
-    var today = new Date();
-    var year = today.getFullYear();
-    var month = today.getMonth(); // месяц от 0 до 11, нужно прибавлять 1
-    var dayMonth = today.getDate();
-    var dayWeek = today.getDay(); // от 0 до 6, причем 0 - это воскресение
-    dayWeek = dayWeek === 0 ? 7 : dayWeek;
+function buildCalendar(yearToOperate, monthToOperate) {
+    var dayToOperate = new Date(yearToOperate, monthToOperate);
+    var year = dayToOperate.getFullYear();
+    var month = dayToOperate.getMonth();
+    var dayMonth = new Date().getDate();
     var firstDay = getFirstDayWeekOfMonth(year, month);
-
-    console.log("DATE = ", firstDay, dayWeek, dayMonth, month, year, today);
-    var k = dayMonth - (dayWeek - 1); // первый день недели, который вставляется в ячейку таблицы
-    alert('dayMonth k ' + k);
-
     var j = 1; // это счетчик недель, которые выводятся в календарь
     let previusMonthDayCounter = getLastMondayOfMonth(getFirstDayWeekOfMonth(year, month - 1));
     let nextMonthDayCounter = 1;
     var dayCounter = 1;
     var str_out_week = '';
-    while (j < 6) {
+    while (j < 7) {
         var str_out = '';
-        for (var i = 1; i < 8; i++, k++) {
+        let tmpCellObject = '';
+        for (var i = 1; i < 8; i++) {
             var todayClass = '';
             if (firstDay.dayWeek > i && j == 1) {
-                str_out += '<td' + todayClass + ' data-weekday="' + i + '" data-daymonth="' + previusMonthDayCounter + '">' + previusMonthDayCounter + '</td>';
+                tmpCellObject = {className: ' class="not_current"',
+                                dataFullDate: (previusMonthDayCounter + '.' + (month === 0 ? 12 : month) + '.' +
+                                    (month === 0 ? yearToOperate - 1 : yearToOperate)),
+                                dataDayMonth: previusMonthDayCounter};
                 previusMonthDayCounter++;
             } else if (dayCounter > firstDay.maxDays) {
-                str_out += '<td' + todayClass + ' data-weekday="' + i + '" data-daymonth="' + nextMonthDayCounter + '">' + nextMonthDayCounter + '</td>';
+                tmpCellObject = {className: ' class="not_current"',
+                                dataFullDate: (nextMonthDayCounter + '.' + (month === 11 ? 1 : month + 2) + '.' +
+                                    (month == 11 ? yearToOperate + 1: yearToOperate)),
+                                dataDayMonth: nextMonthDayCounter};
                 nextMonthDayCounter++;
             }
             else {
-                if (k == dayMonth) { //
+                if (dayCounter == dayMonth) { //
                     todayClass = ' class="today"';
                 }
-                str_out += '<td' + todayClass + ' data-weekday="' + i + '" data-daymonth="' + dayCounter + '">' + dayCounter + '</td>';
+                tmpCellObject = {className: todayClass,
+                                dataFullDate: (dayCounter + '.' + (month +1) + '.' + yearToOperate),
+                                dataDayMonth: dayCounter};
                 dayCounter++;
             }
+            str_out += buildOneCell(tmpCellObject);
         }
         str_out_week += '<tr>' + str_out + '</tr>';
         j++;
     }
+//    printMonthHeader(month);
 
-    return str_out_week;
+    document.getElementById('calendarTable').children[1].innerHTML = str_out_week;
 }
+
+const buildOneCell = ({className, dataFullDate, dataDayMonth, cellText = null}) => {
+    return '<td onclick="handleClickCalendarCell(event)"' + className + ' data-fullDate="' + dataFullDate + '" data-daymonth="' +
+        dataDayMonth + '">' + dataDayMonth + '</td>';
+};
+
+const printMonthHeader = (val) => {
+    let month = ['January', 'Febrary', 'Marth', 'April', 'May', 'June', 'July', 'August', 'September',
+        'October', 'November', 'Desember'];
+
+    document.querySelector('#monthHeader').innerHTML = month[val] + ' ' + year;
+};
 
 const getLastMondayOfMonth = (month) => {
     const deltaBeforeFirstMonday = 8 - month.dayWeek;
@@ -224,3 +241,30 @@ function getFirstDayWeekOfMonth(yy, mm) {
 function getLastDay(yy, mm) {
     return new Date(yy, mm + 1, 0).getDate();
 }
+
+const handleClickCalendarCell = (event) => {
+    console.log(event.target.getAttribute('data-fulldate'));
+    let target = event.target;
+    document.querySelector('#reminderData').value = target.getAttribute('data-fulldate');
+};
+
+const handleClickCalendarArrows = (event) => {
+    event.stopPropagation();
+    let target = event.target.closest('.arrows_left, .arrows_right');
+    var curMonth = STATE.calendarMonth.getMonth();
+    var curYear = STATE.calendarMonth.getFullYear();
+    var classes = target.classList;
+    var monthForState = 0;
+    var yearForState = curYear;
+
+    if (classes[0] == 'arrows_right'){
+        monthForState = curMonth === 11 ? 0 : curMonth + 1;
+        yearForState = curMonth === 11 ? yearForState + 1 : yearForState;
+    } else {
+        monthForState = curMonth === 0 ? 12 : curMonth - 1;
+        yearForState = curMonth === 0 ? yearForState -1 : yearForState;
+    }
+    buildCalendar(curYear, monthForState);
+    STATE.calendarMonth = new Date(yearForState, monthForState);
+    console.log(target);
+};

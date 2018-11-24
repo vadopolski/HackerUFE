@@ -33,7 +33,6 @@
 	<div class="row">
 		<div class="col-md-6">
       <form id="form1" action="">
-
 			<div class="form-group">
     		<label for="taskData">Название напоминания</label>
     		<input type="text" class="form-control" id="taskData" aria-describedby="taskDataHelp" placeholder="Занятие">
@@ -46,7 +45,7 @@
       <div onclick="showCalendar(event)" class="input-group-prepend">
           <span class="input-group-text" id="calendarOpener"><i class="fa fa-calendar"></i></span>
         </div>                  
-					<input type="text" class="form-control" id="reminderData" aria-describedby="reminderDataHelp" placeholder="Напомнить">
+					<input readonly type="text" class="form-control" id="reminderData" aria-describedby="reminderDataHelp" placeholder="Напомнить">
       </div>
       <small id="reminderDataHelp" class="form-text text-muted">Введите дату и время напоминания.</small>
 		</div> <!-- end of form-group-->
@@ -60,8 +59,6 @@
 
       <button type="button" class="btn btn-primary" onclick="insertItemToList()" >Add task</button>
       <button type="button" class="btn btn-light" onclick="emptyAllList()">Clear Form</button>
-      <button type="button" class="btn btn-light" onclick="buildCalendar()">Date</button>
-      <!--button type="reset" class="btn btn-dark">Reset</button -->
 
     </form>
 		</div><!-- end of col-md-6 -->
@@ -83,34 +80,53 @@
 <div id="calendar" class="micalendar" style="display:none">
   <div class="header_wrap">
     <div class="header">
-      <p>Text Content</p>
+      <p id="monthHeader">Text Content</p>
     </div> 
     <div class="arrows">
-      <div class="arrows_left"><i class="fa fa-angle-left"></i></div> 
-      <div class="arrows_right"><i class="fa fa-angle-right"></i></div> 
+      <div id="prevButton" class="arrows_left"><i class="fa fa-angle-left"></i></div>
+      <div id="nextButton" class="arrows_right"><i class="fa fa-angle-right"></i></div>
     </div> <!-- END OF arrows -->
   </div>  
-  <table>
-    <tr>
-      <th>Пн</th>
-      <th>Вт</th>
-      <th>Ср</th>
-      <th>Чт</th>
-      <th>Пт</th>
-      <th>Сб</th>
-      <th>Вс</th>
-    </tr>
-    <script>
-        var buildCalendar1 = buildCalendar();
-        document.write(buildCalendar1);
-    </script>
+  <table id="calendarTable">
+      <thead>
+      <tr>
+          <th>Пн</th>
+          <th>Вт</th>
+          <th>Ср</th>
+          <th>Чт</th>
+          <th>Пт</th>
+          <th>Сб</th>
+          <th>Вс</th>
+      </tr>
+
+      </thead>
+      <tbody>
+
+      </tbody>
   </table>
+    <hr>
+        <div class="btn-group">
+            <input type="button" onclick="hideCalendar(event)" value="Cancel" class="btn btn-sm btn-outline-secondary">
+        </div>
+
 </div> <!-- END OF CALENDAR -->
 
 
 <script>
+  buildCalendar(STATE.calendarMonth.getFullYear(), STATE.calendarMonth.getMonth());
+
   document.body.addEventListener('click', function(event){
+      alert('Test');
     hideCalendar(event);
+  });
+
+  let calendarArrowLeft = document.querySelector('#prevButton');
+  let calendarArrowRight = document.querySelector('#nextButton');
+  calendarArrowLeft.addEventListener('click', function (event) {
+        handleClickCalendarArrows(event);
+  });
+  calendarArrowRight.addEventListener('click', function (event) {
+        handleClickCalendarArrows(event);
   });
 
   document.addEventListener("DOMContentLoaded", function() {
