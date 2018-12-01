@@ -180,27 +180,52 @@ function buildCalendar(yearToOperate, monthToOperate) { //
     var str_out = '';
     for(var i = 1; i < 8; i++) {
       var tmpCellObject = {};
+      var currrentDt = new Date();
+        let todayClass = '';
+
+        if (yearToOperate > currrentDt.getFullYear()) {
+            todayClass = '';
+        } else if (yearToOperate = currrentDt.getFullYear()) {
+
+            if (monthToOperate > currrentDt.getMonth()) {
+                todayClass = '';
+
+            } else if (monthToOperate == currrentDt.getMonth()) {
+                if (dayCounter > dayMonth) {
+                    todayClass = '';
+                }
+                else if (dayCounter == dayMonth) {
+                    if (firstDay.dayWeek > i && j == 1) {
+                        todayClass = ' class="not_current"'
+                    } else {
+                        todayClass = ' class="today"';
+                    }
+                }
+                else {
+                    todayClass = ' class="not_current"'
+                }
+            } else {
+                todayClass = ' class="not_current"'
+            }
+        } else {
+            todayClass = ' class="not_current"';
+        }
+
       if ((firstDay.dayWeek > i && j == 1) ) { // если меньше чем 1е число текущего месяца - ячейки для предыдущего месяца
         var tmpDayMonth = (maximumDaysInPrevMonth + i + 1 - firstDay.dayWeek);
         tmpCellObject = {
-          className: ' class="not_current"',
+          className: todayClass,
           dataFullDate: (tmpDayMonth + '.' + (month === 0 ? 12 : month) + '.' + (month === 0 ? yearToOperate - 1 : yearToOperate)),
           dataDaymonth: tmpDayMonth,
         };
       } else if (dayCounter > firstDay.maxDays )  { // ячейки для следующего месяца
         tmpCellObject = {
-          className: ' class="not_current"',
+          className: todayClass,
           dataFullDate: (dayCounterAfter + '.' + (month === 11 ? 1 : month + 2) + '.' + (month == 11 ? yearToOperate + 1 : yearToOperate)),
           dataDaymonth: dayCounterAfter++,
         };
 
       } else { // ЯЧЕЙКИ для ТЕКУЩЕГО МЕСЯЦА
-        var todayClass = '';
-        var currrentDt = new Date();
-
-        if(yearToOperate == currrentDt.getFullYear() && monthToOperate == currrentDt.getMonth()) {
-            todayClass = dayCounter == dayMonth ? ' class="today"' : '';
-        }
 
         tmpCellObject = {
           className: todayClass,
