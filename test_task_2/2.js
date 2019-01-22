@@ -2,15 +2,14 @@ function calcFactorial2(n, maxTime) {
 
     const startTime = Date.now();
     function fn(num) {
-        if(!num) return 1;
+        if (!num) return 1;
         const diff = Date.now() - startTime;
-        if(diff > maxTime){
+        if (diff > maxTime) {
             throw Error('Shif on me: it takes too long ...')
         }
-        return num * fn(num -1);
+        return num * fn(num - 1);
     }
     console.log('startTime', startTime);
-
     return fn(num);
 }
 
@@ -20,7 +19,7 @@ try {
     alert(e.message)
 }
 
-const calcFactorial2 = (n, t) => {
+const calcFactorial1 = (n, t) => {
     if (n == 0) return 0;
     if (n == 1) return 1;
 
@@ -36,6 +35,4 @@ const calcFactorial2 = (n, t) => {
     }
 
     return result;
-
-
-}
+};
