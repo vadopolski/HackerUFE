@@ -35,7 +35,7 @@ const calcFactorial2 = (n, t) => {
         }
     }
 
-    return
+    return result;
 
 
 }
